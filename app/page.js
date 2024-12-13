@@ -3,6 +3,24 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "./home.css";
+import io from 'socket.io-client';
+
+let socket;
+
+export default function Home() {
+  const [onlineUsers, setOnlineUsers] = useState(0);
+
+  useEffect(() => {
+    socket = io(); // เชื่อมต่อไปยังเซิร์ฟเวอร์
+    socket.on('onlineUsers', (count) => {
+      setOnlineUsers(count);
+    });
+
+    return () => {
+      socket.disconnect(); // ตัดการเชื่อมต่อเมื่อออกจากหน้าเว็บ
+    };
+  }, []);
+
 
 export default function Home() {
   const router = useRouter();
@@ -140,6 +158,10 @@ export default function Home() {
                 className="form-input"
               />
             </div>
+            <div>
+              <h3>Online Users: {onlineUsers}</h3>
+            </div>
+
             <div>
               <label>Content:</label>
               <textarea
